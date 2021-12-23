@@ -1,4 +1,5 @@
 const { ErreurStatutDeploiementInvalide } = require('../erreurs');
+const DonneesSensiblesSpecifiques = require('./donneesSensiblesSpecifiques');
 const FonctionnalitesSpecifiques = require('./fonctionnalitesSpecifiques');
 const InformationsHomologation = require('./informationsHomologation');
 const PointsAcces = require('./pointsAcces');
@@ -24,8 +25,9 @@ class InformationsGenerales extends InformationsHomologation {
         'provenanceService',
       ],
       listesAgregats: {
-        pointsAcces: PointsAcces,
+        donneesSensiblesSpecifiques: DonneesSensiblesSpecifiques,
         fonctionnalitesSpecifiques: FonctionnalitesSpecifiques,
+        pointsAcces: PointsAcces,
       },
     });
     InformationsGenerales.valide(donnees, referentiel);
@@ -36,6 +38,10 @@ class InformationsGenerales extends InformationsHomologation {
 
   descriptionTypeService() {
     return this.referentiel.typeService(this.typeService);
+  }
+
+  nombreDonneesSensiblesSpecifiques() {
+    return this.donneesSensiblesSpecifiques.nombre();
   }
 
   nombreFonctionnalitesSpecifiques() {

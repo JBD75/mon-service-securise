@@ -10,6 +10,7 @@ const {
 const MSS = require('../src/mss');
 const Referentiel = require('../src/referentiel');
 const DepotDonnees = require('../src/depotDonnees');
+const DonneesSensiblesSpecifiques = require('../src/modeles/donneesSensiblesSpecifiques');
 const FonctionnalitesSpecifiques = require('../src/modeles/fonctionnalitesSpecifiques');
 const Homologation = require('../src/modeles/homologation');
 const PointsAcces = require('../src/modeles/pointsAcces');
@@ -414,7 +415,7 @@ describe('Le serveur MSS', () => {
 
     it('aseptise les paramètres', (done) => {
       verifieAseptisationParametres(
-        ['nomService', 'pointsAcces.*.description', 'fonctionnalitesSpecifiques.*.description'],
+        ['nomService', 'pointsAcces.*.description', 'fonctionnalitesSpecifiques.*.description', 'donneesSensiblesSpecifiques.*.description'],
         { method: 'post', url: 'http://localhost:1234/api/homologation' },
         done
       );
@@ -430,8 +431,6 @@ describe('Le serveur MSS', () => {
     });
 
     it('aseptise la liste des fonctionnalités spécifiques des descriptions vides', (done) => {
-      depotDonnees.nouvelleHomologation = () => Promise.resolve();
-
       axios.post('http://localhost:1234/api/homologation', {})
         .then(() => {
           verifieAseptisationListe('fonctionnalitesSpecifiques', ['description']);
@@ -451,6 +450,15 @@ describe('Le serveur MSS', () => {
       axios.post('http://localhost:1234/api/homologation', { presentation: 'Une présentation' })
         .then(() => {
           expect(appelleAjoutePresentationAHomologation).to.be(true);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('aseptise la liste des données sensibles spécifiques des descriptions vides', (done) => {
+      axios.post('http://localhost:1234/api/homologation', {})
+        .then(() => {
+          verifieAseptisationListe('donneesSensiblesSpecifiques', ['description']);
           done();
         })
         .catch(done);
@@ -488,6 +496,7 @@ describe('Le serveur MSS', () => {
           fonctionnalites: undefined,
           fonctionnalitesSpecifiques: undefined,
           donneesCaracterePersonnel: undefined,
+          donneesSensiblesSpecifiques: undefined,
           delaiAvantImpactCritique: undefined,
           presenceResponsable: undefined,
           presentation: undefined,
@@ -521,7 +530,7 @@ describe('Le serveur MSS', () => {
 
     it('aseptise les paramètres', (done) => {
       verifieAseptisationParametres(
-        ['nomService', 'pointsAcces.*.description', 'fonctionnalitesSpecifiques.*.description'],
+        ['nomService', 'pointsAcces.*.description', 'fonctionnalitesSpecifiques.*.description', 'donneesSensiblesSpecifiques.*.description'],
         { method: 'put', url: 'http://localhost:1234/api/homologation/456' },
         done
       );
@@ -551,8 +560,6 @@ describe('Le serveur MSS', () => {
         ],
       });
 
-      depotDonnees.ajouteInformationsGeneralesAHomologation = () => Promise.resolve();
-
       axios.put('http://localhost:1234/api/homologation/456', { fonctionnalitesSpecifiques })
         .then(() => {
           verifieAseptisationListe('fonctionnalitesSpecifiques', ['description']);
@@ -572,6 +579,22 @@ describe('Le serveur MSS', () => {
       axios.put('http://localhost:1234/api/homologation/456', { presentation: 'Une présentation' })
         .then(() => {
           expect(appelleAjoutePresentationAHomologation).to.be(true);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('aseptise la liste des données sensibles spécifiques des descriptions vides', (done) => {
+      const donneesSensiblesSpecifiques = new DonneesSensiblesSpecifiques({
+        donneesSensiblesSpecifiques: [
+          { description: 'une description' },
+          { description: null },
+        ],
+      });
+
+      axios.put('http://localhost:1234/api/homologation/456', { donneesSensiblesSpecifiques })
+        .then(() => {
+          verifieAseptisationListe('donneesSensiblesSpecifiques', ['description']);
           done();
         })
         .catch(done);

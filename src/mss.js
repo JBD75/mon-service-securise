@@ -5,6 +5,7 @@ const { ErreurModele } = require('./erreurs');
 const AvisExpertCyber = require('./modeles/avisExpertCyber');
 const CaracteristiquesComplementaires = require('./modeles/caracteristiquesComplementaires');
 const FonctionnalitesSpecifiques = require('./modeles/fonctionnalitesSpecifiques');
+const DonneesSensiblesSpecifiques = require('./modeles/donneesSensiblesSpecifiques');
 const Homologation = require('./modeles/homologation');
 const InformationsGenerales = require('./modeles/informationsGenerales');
 const InformationsHomologation = require('./modeles/informationsHomologation');
@@ -209,9 +210,15 @@ const creeServeur = (depotDonnees, middleware, referentiel, adaptateurMail,
 
   app.post('/api/homologation',
     middleware.verificationAcceptationCGU,
-    middleware.aseptise('nomService', 'pointsAcces.*.description', 'fonctionnalitesSpecifiques.*.description'),
+    middleware.aseptise(
+      'nomService',
+      'pointsAcces.*.description',
+      'fonctionnalitesSpecifiques.*.description',
+      'donneesSensiblesSpecifiques.*.description'
+    ),
     middleware.aseptiseListe('pointsAcces', PointsAcces.proprietesItem()),
     middleware.aseptiseListe('fonctionnalitesSpecifiques', FonctionnalitesSpecifiques.proprietesItem()),
+    middleware.aseptiseListe('donneesSensiblesSpecifiques', DonneesSensiblesSpecifiques.proprietesItem()),
     (requete, reponse, suite) => {
       const {
         nomService,
@@ -220,6 +227,7 @@ const creeServeur = (depotDonnees, middleware, referentiel, adaptateurMail,
         fonctionnalites,
         fonctionnalitesSpecifiques,
         donneesCaracterePersonnel,
+        donneesSensiblesSpecifiques,
         delaiAvantImpactCritique,
         presenceResponsable,
         presentation,
@@ -234,6 +242,7 @@ const creeServeur = (depotDonnees, middleware, referentiel, adaptateurMail,
         fonctionnalites,
         fonctionnalitesSpecifiques,
         donneesCaracterePersonnel,
+        donneesSensiblesSpecifiques,
         delaiAvantImpactCritique,
         presenceResponsable,
         presentation,
@@ -253,9 +262,15 @@ const creeServeur = (depotDonnees, middleware, referentiel, adaptateurMail,
 
   app.put('/api/homologation/:id',
     middleware.trouveHomologation,
-    middleware.aseptise('nomService', 'pointsAcces.*.description', 'fonctionnalitesSpecifiques.*.description'),
+    middleware.aseptise(
+      'nomService',
+      'pointsAcces.*.description',
+      'fonctionnalitesSpecifiques.*.description',
+      'donneesSensiblesSpecifiques.*.description'
+    ),
     middleware.aseptiseListe('pointsAcces', PointsAcces.proprietesItem()),
     middleware.aseptiseListe('fonctionnalitesSpecifiques', FonctionnalitesSpecifiques.proprietesItem()),
+    middleware.aseptiseListe('donneesSensiblesSpecifiques', DonneesSensiblesSpecifiques.proprietesItem()),
     (requete, reponse, suite) => {
       const infosGenerales = new InformationsGenerales(requete.body, referentiel);
       depotDonnees.ajouteInformationsGeneralesAHomologation(requete.params.id, infosGenerales)
