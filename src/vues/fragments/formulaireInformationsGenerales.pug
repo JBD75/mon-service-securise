@@ -106,5 +106,5 @@ mixin formulaireInformationsGenerales(idHomologation)
   script(id = 'donnees-fonctionnalites-specifiques', type = 'application/json').
     !{JSON.stringify(homologation.informationsGenerales.fonctionnalitesSpecifiques.toJSON())}
   script(id = 'donnees-donnees-sensibles-specifiques', type = 'application/json').
-    []
+    !{JSON.stringify(homologation.informationsGenerales.donneesSensiblesSpecifiques.toJSON()) }
   script(type = 'module', src = '/statique/homologation/formulaireInformationsGenerales.js')
