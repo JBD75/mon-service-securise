@@ -5,11 +5,19 @@ const sourceRegExpParamsItem = (nomIndicatif) => `^(description)-${nomIndicatif}
 const listesAvecItemsExtraits = [
   { cle: 'pointsAcces', nomIndicatif: 'point-acces' },
   { cle: 'fonctionnalitesSpecifiques', nomIndicatif: 'fonctionnalite' },
+  { cle: 'donneesSensiblesSpecifiques', nomIndicatif: 'donnees-sensibles' },
 ].map((valeur) => (
   { ...valeur, sourceRegExpParamsItem: sourceRegExpParamsItem(valeur.nomIndicatif) }
 ));
 
 $(() => {
+  ElementsAjoutables.nouveaux(
+    { nom: 'donnees-sensibles' },
+    '#donnees-sensibles-specifiques',
+    '#donnees-donnees-sensibles-specifiques',
+    '#nouvelles-donnees-sensibles'
+  );
+
   ElementsAjoutables.nouveaux(
     { nom: 'fonctionnalite' },
     '#fonctionnalites-specifiques',
