@@ -1,47 +1,33 @@
-import { brancheAjoutItem, peupleListeItems } from './saisieListeItems.js';
+import { brancheAjoutItem } from './saisieListeItems.js';
 
-export default class ElementsAjoutables {
-  constructor({ nom, valeurExemple = '' }, selecteurConteneur, selecteurDonnees, selecteurLienAjout) {
-    this.zoneSaisie = { nom, valeurExemple };
-    this.selecteurConteneur = selecteurConteneur;
-    this.selecteurDonnees = selecteurDonnees;
-    this.selecteurLienAjout = selecteurLienAjout;
-    this.indexMax = 0;
+const brancheElementsAjoutables = (identifiantConteneurElements, identifiantElement, valeurExemple = '') => {
+  const indexMax = (selecteurDuConteneur) => {
+    let index = $(selecteurDuConteneur).children().length;
+    while ($(`#description-${identifiantElement}-${index}`).length > 0) {
+      index += 1;
+    }
+    return index;
+  };
 
-    this.peuple();
-    this.branche();
-  }
+  const selecteurConteneur = `#${identifiantConteneurElements}`;
+  const selecteurLienAjout = `#ajout-element-${identifiantElement}`;
 
-  static nouveaux({ nom, valeurExemple = '' }, selecteurConteneur, selecteurDonnees, selecteurLienAjout) {
-    return new ElementsAjoutables(
-      { nom, valeurExemple }, selecteurConteneur, selecteurDonnees, selecteurLienAjout
-    );
-  }
+  const templateZoneSaisie = (nomElement, valeurExempleElement) => (index, { description = '' }) => `
+    <input
+      id="description-${nomElement}-${index}"
+      name="description-${nomElement}-${index}"
+      type="text"
+      value="${description}"
+      placeholder="${valeurExempleElement}"
+    >
+  `;
 
-  peuple() {
-    this.indexMax = peupleListeItems(
-      this.selecteurConteneur, this.selecteurDonnees, this.templateZoneSaisie()
-    );
-  }
+  brancheAjoutItem(
+    selecteurLienAjout,
+    selecteurConteneur,
+    (index) => templateZoneSaisie(identifiantElement, valeurExemple)(index, {}),
+    () => indexMax(selecteurConteneur)
+  );
+};
 
-  branche() {
-    brancheAjoutItem(
-      this.selecteurLienAjout,
-      this.selecteurConteneur,
-      (index) => this.templateZoneSaisie()(index, {}),
-      () => (this.indexMax += 1)
-    );
-  }
-
-  templateZoneSaisie() {
-    return (index, { description = '' }) => `
-      <input
-        id="description-${this.zoneSaisie.nom}-${index}"
-        name="description-${this.zoneSaisie.nom}-${index}"
-        type="text"
-        value="${description}"
-        placeholder="${this.zoneSaisie.valeurExemple}"
-      >
-    `;
-  }
-}
+export default brancheElementsAjoutables;
