@@ -18,6 +18,7 @@ const MesureGenerale = require('../src/modeles/mesureGenerale');
 const MesureSpecifique = require('../src/modeles/mesureSpecifique');
 const MesuresSpecifiques = require('../src/modeles/mesuresSpecifiques');
 const PartiesPrenantes = require('../src/modeles/partiesPrenantes');
+const Referentiel = require('../src/referentiel');
 const RisqueGeneral = require('../src/modeles/risqueGeneral');
 const RisqueSpecifique = require('../src/modeles/risqueSpecifique');
 const RisquesSpecifiques = require('../src/modeles/risquesSpecifiques');
@@ -331,14 +332,34 @@ describe('Le dépôt de données persistées en mémoire', () => {
   });
 
   it('ajoute une localisation des données à une homologation', (done) => {
+    const referentiel = Referentiel.creeReferentiel({
+      localisationsDonnees: { france: {} },
+    });
     const adaptateurPersistance = AdaptateurPersistanceMemoire.nouvelAdaptateur({
       homologations: [{ id: '123', informationsGenerales: { nomService: 'nom' } }],
     });
-    const depot = DepotDonnees.creeDepot({ adaptateurPersistance });
+    const depot = DepotDonnees.creeDepot({ adaptateurPersistance, referentiel });
 
     depot.ajouteLocalisationDonneesAHomologation('123', 'france')
       .then(() => depot.homologation('123'))
       .then(({ informationsGenerales: { localisationDonnees } }) => {
+        expect(localisationDonnees).to.equal('france');
+        done();
+      })
+      .catch(done);
+  });
+  it('ajoute une localisation des données à une homologation en caractéristique complémentaire', (done) => {
+    const referentiel = Referentiel.creeReferentiel({
+      localisationsDonnees: { france: {} },
+    });
+    const adaptateurPersistance = AdaptateurPersistanceMemoire.nouvelAdaptateur({
+      homologations: [{ id: '123', informationsGenerales: { nomService: 'nom' } }],
+    });
+    const depot = DepotDonnees.creeDepot({ adaptateurPersistance, referentiel });
+
+    depot.ajouteLocalisationDonneesACaracteristiques('123', 'france')
+      .then(() => depot.homologation('123'))
+      .then(({ caracteristiquesComplementaires: { localisationDonnees } }) => {
         expect(localisationDonnees).to.equal('france');
         done();
       })

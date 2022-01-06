@@ -136,6 +136,18 @@ const creeDepot = (config = {}) => {
       })
   );
 
+  const ajouteLocalisationDonneesACaracteristiques = (idHomologation, localisationDonnees) => (
+    adaptateurPersistance.homologation(idHomologation)
+      .then((homologationTrouvee) => {
+        const caracteristiquesComplementaires = new CaracteristiquesComplementaires(
+          homologationTrouvee.caracteristiquesComplementaires,
+          referentiel
+        );
+        caracteristiquesComplementaires.localisationDonnees = localisationDonnees;
+        return metsAJourProprieteHomologation('caracteristiquesComplementaires', homologationTrouvee, caracteristiquesComplementaires);
+      })
+  );
+
   const ajoutePartiesPrenantesAHomologation = (...params) => (
     metsAJourProprieteHomologation('partiesPrenantes', ...params)
   );
@@ -263,6 +275,7 @@ const creeDepot = (config = {}) => {
     ajouteAvisExpertCyberAHomologation,
     ajouteCaracteristiquesAHomologation,
     ajouteInformationsGeneralesAHomologation,
+    ajouteLocalisationDonneesACaracteristiques,
     ajouteLocalisationDonneesAHomologation,
     ajouteMesureGeneraleAHomologation,
     ajoutePartiesPrenantesAHomologation,
